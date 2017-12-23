@@ -1,12 +1,15 @@
 <?php
 	session_start();
 	
+	include "functions.php";
+	include "wuapi_caller.php";
+	
 	if( !isset( $_SESSION['block_count'] ) ){
 		$_SESSION['block_count'] = 1;
 	}
 	
-	$delete_index = "";
-	
+	$delete_index = "-1";
+	$run = false;
 	//turn input to item array	
 	$array = filter_input_array(INPUT_POST);
 	$item = array();
@@ -27,17 +30,18 @@
 	if( isset( $_POST['delete_index'] ) ){
 		$_SESSION['block_count'] = ( $_SESSION['block_count'] > 0 )? $_SESSION['block_count'] - 1 : 0;
 		$delete_index = $_POST['delete_index'];
-		
 		//delete 
-		if( isset ( $item[ $delete_index ] ) ) {
-			unset( $item[ $delete_index ] );
-			$item = array_values( $item );
-		}
+		delete_in_array( $item, $delete_index );
+	}
+	
+	if( isset ( $_POST['run'] ) ){
+		$run = true;
+		//check for non full inputed blocks
+		$result = check_array( $item );
 	}
 	
 	$_POST['block'] = "";
 	$_POST['delete_index'] = "";
-
 	
 	echo '
 		<!DOCTYPE html>
@@ -53,6 +57,20 @@
 				</style>
 			</head>
 			<body>
+	';
+	if( $run && !$result[0] ){
+		$message = $result[1];
+		$output_message = "The following input is not filled\\n";
+		foreach( $message as $info ){
+			$output_message = $output_message . $info . "\\n";
+		}
+		echo '
+				<script>
+					alert( "' . $output_message . '" );
+				</script>
+		';
+	}
+	echo '
 				<form method="POST" action="' . $_SERVER['PHP_SELF'] . '">
 					<table>
 	';
