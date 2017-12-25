@@ -82,11 +82,11 @@
 								' . ( $i + 1 ) . '
 							</td>
 							<td>
-                                <input type="date" name="item[date_start][]" placeholder="departure date"';
-                                    if ( isset( $item[$i]['date_start'] ) ){
-                                        echo ' value="' . $item[$i]['date_start'] . '"';
-                                    }
-                                echo '>
+								<input type="date" name="item[date_start][]" placeholder="departure date"';
+									if ( isset( $item[$i]['date_start'] ) ){
+										echo ' value="' . $item[$i]['date_start'] . '"';
+									}
+								echo '>
 								<input type="text" name="item[country_start][]" placeholder="departure country"';
 									if ( isset( $item[$i]['country_start'] ) ){
 										echo ' value="' . $item[$i]['country_start'] . '"';
@@ -98,11 +98,11 @@
 									}
 								echo '>
 								<br>
-                                <input type="date" name="item[date_end][]" placeholder="arrival date"';
-                                    if ( isset( $item[$i]['date_end'] ) ){
-                                        echo ' value="' . $item[$i]['date_end'] . '"';
-                                    }
-                                echo '>
+								<input type="date" name="item[date_end][]" placeholder="arrival date"';
+									if ( isset( $item[$i]['date_end'] ) ){
+										echo ' value="' . $item[$i]['date_end'] . '"';
+									}
+								echo '>
 								<input type="text" name="item[country_end][]" placeholder="arrival country"';
 									if ( isset( $item[$i]['country_end'] ) ){
 										echo ' value="' . $item[$i]['country_end'] . '"';
