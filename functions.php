@@ -5,7 +5,7 @@
 			$array = array_values( $array );
 		}
 	}
-	
+
 	function check_array( &$array ){
 		$var_array = array(
 			"country_start" => "departure country",

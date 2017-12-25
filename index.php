@@ -1,19 +1,19 @@
 <?php
 	session_start();
-	
+
 	include "functions.php";
 	include "wuapi_caller.php";
-	
+
 	if( !isset( $_SESSION['block_count'] ) ){
 		$_SESSION['block_count'] = 1;
 	}
-	
+
 	$delete_index = "-1";
 	$run = false;
-	//turn input to item array	
+	//turn input to item array
 	$array = filter_input_array(INPUT_POST);
 	$item = array();
-	
+
 	if( !empty( $array['item'] ) ){
 		foreach ( array_keys( $array['item'] ) as $fieldKey ) {
 			foreach ( array_keys( $array['item'][$fieldKey] ) as $index ) {
@@ -21,7 +21,7 @@
 			}
 		}
 	}
-	
+
 	if( !empty( $_POST['block'] ) ){
 		if( $_POST['block'] == "add" ){
 		$_SESSION['block_count'] += 1;
@@ -30,19 +30,19 @@
 	if( isset( $_POST['delete_index'] ) ){
 		$_SESSION['block_count'] = ( $_SESSION['block_count'] > 0 )? $_SESSION['block_count'] - 1 : 0;
 		$delete_index = $_POST['delete_index'];
-		//delete 
+		//delete
 		delete_in_array( $item, $delete_index );
 	}
-	
+
 	if( isset ( $_POST['run'] ) ){
 		$run = true;
 		//check for non full inputed blocks
 		$result = check_array( $item );
 	}
-	
+
 	$_POST['block'] = "";
 	$_POST['delete_index'] = "";
-	
+
 	echo '
 		<!DOCTYPE html>
 		<html>
@@ -74,7 +74,7 @@
 				<form method="POST" action="' . $_SERVER['PHP_SELF'] . '">
 					<table>
 	';
-	
+
 	for( $i = 0; $i < $_SESSION['block_count'] ; $i++ ){
 		echo'
 						<tr>
@@ -82,8 +82,13 @@
 								' . ( $i + 1 ) . '
 							</td>
 							<td>
+                                <input type="date" name="item[date_start][]" placeholder="departure date"';
+                                    if ( isset( $item[$i]['date_start'] ) ){
+                                        echo ' value="' . $item[$i]['date_start'] . '"';
+                                    }
+                                echo '>
 								<input type="text" name="item[country_start][]" placeholder="departure country"';
-									if ( isset( $item[$i]['country_start'] ) ){ 
+									if ( isset( $item[$i]['country_start'] ) ){
 										echo ' value="' . $item[$i]['country_start'] . '"';
 									}
 								echo '>
@@ -93,8 +98,13 @@
 									}
 								echo '>
 								<br>
+                                <input type="date" name="item[date_end][]" placeholder="arrival date"';
+                                    if ( isset( $item[$i]['date_end'] ) ){
+                                        echo ' value="' . $item[$i]['date_end'] . '"';
+                                    }
+                                echo '>
 								<input type="text" name="item[country_end][]" placeholder="arrival country"';
-									if ( isset( $item[$i]['country_end'] ) ){ 
+									if ( isset( $item[$i]['country_end'] ) ){
 										echo ' value="' . $item[$i]['country_end'] . '"';
 									}
 								echo '>
@@ -121,7 +131,7 @@
 							</td>
 						</tr>
 					</table>
-				</form>	
+				</form>
 			</body>
 		</html>
 	';
