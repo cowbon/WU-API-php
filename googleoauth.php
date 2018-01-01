@@ -7,6 +7,18 @@ $client = new Google_Client();
 $client->setAuthConfig('client_id.json');
 $client->addScope(Google_Service_Calendar::CALENDAR_READONLY);
 
+function parse_time($time) {
+	$ret = Array();
+	$ret['year'] = substr($time, 0, 4);
+	$ret['month'] = substr($time, 5, 2);
+	$ret['day'] = substr($time, 8, 2);
+	$ret['hour'] = substr($time, 11, 2);
+	$ret['min'] = substr($time, 14, 2);
+	$ret['utc_h'] = substr($time, 19, 3);
+	$ret['utc_m'] = substr($time, 23, 2);
+	return $ret;
+}
+
 function parse_event($event) {
 
 	// Get Destination
@@ -61,10 +73,35 @@ function parse_event($event) {
 	    $result =  $result['FlightInfoStatusResult']['flights'][0];
 	    $ret['origin'] = $result['origin']['alternate_ident'];
 	    $ret['dest'] = $result['destination']['alternate_ident'];
-	    $ret['d_time'] = $result['filed_departure_time']['localtime'];
-		$ret['e_time'] = $result['filed_arrival_time']['localtime'];
-		return $ret
+	    $d_time_diff = $result['filed_departure_time']['localtime'] - $result['filed_departure_time']['epoch']];
+		$a_time_diff = $result['filed_arrival_time']['localtime'] - $result['filed_arrival_time']['epoch'];
 	}
+
+	//Get Depart time
+	$start = new DataTime($event->start->dateTime);
+	$timeshift = parse_time($start);
+
+	if (intval($timeshift['utc_h']) < 0)
+		$timeshift = intval($timeshift['utc_h'])*3600 - $timeshift['utc_m']*60;
+	else
+		$timeshift = intval($timeshift['utc_h'])*3600 + $timeshift['utc_m']*60;
+
+	$start->setTimestamp($start->getTimeStamp() - $timeshift + $d_time_diff);
+	$ret['departure_time'] = $start->getTimeStamp();
+
+	// Get Arrival time
+	$end = new DataTime($event->end->dataTime);
+	$timeshift = parse_time($end);
+
+	if (intval($timeshift['utc_h']) < 0)
+		$timeshift = intval($timeshift['utc_h'])*3600 - $timeshift['utc_m']*60;
+	else
+		$timeshift = intval($timeshift['utc_h'])*3600 + $timeshift['utc_m']*60;
+
+	$end>setTimestamp($end->getTimeStamp() - $timeshift + $d_time_diff);
+	$ret['arrival_time'] = $end->getTimeStamp();
+
+	return $ret;
 }
 
 if (isset($_SESSION['access_token']) && $_SESSION['access_token']) {
@@ -88,7 +125,7 @@ if (isset($_SESSION['access_token']) && $_SESSION['access_token']) {
 		foreach ($results->getItems() as $event) {
 			$entry = parse_event($event);
 			array_push($ret, $entry);
-	  	}
+		}
 	}
 
 } else {
