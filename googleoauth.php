@@ -126,6 +126,8 @@ if (isset($_SESSION['access_token']) && $_SESSION['access_token']) {
 			$entry = parse_event($event);
 			array_push($ret, $entry);
 		}
+
+		var_dump($ret, "At line 130 in googleoauth.php");
 	}
 
 } else {
